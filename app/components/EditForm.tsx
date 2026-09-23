@@ -1,17 +1,20 @@
 "use client";
 
 import { useActionState } from "react";
-import { createTaskAction } from "@/lib/actions/task.actions";
+import { updateTaskAction } from "@/lib/actions/task.actions";
 import { initialActionState } from "@/lib/actions/action-state";
+import type { Task } from "@/lib/data/dal/tasks";
 
-const Form = () => {
+const EditForm = ({ task }: { task: Task }) => {
   const [state, formAction, pending] = useActionState(
-    createTaskAction,
+    updateTaskAction,
     initialActionState,
   );
 
   return (
     <form action={formAction} className="flex flex-col gap-4 w-full">
+      <input type="hidden" name="publicId" value={task.publicId} />
+
       <div className="flex flex-col gap-1 w-full">
         <label
           htmlFor="title"
@@ -24,6 +27,7 @@ const Form = () => {
           name="title"
           type="text"
           placeholder="Task Title"
+          defaultValue={task.title}
           className="input input-bordered w-full"
           aria-invalid={!!state.errors?.title}
         />
@@ -42,6 +46,7 @@ const Form = () => {
           id="description"
           name="description"
           placeholder="Task Description"
+          defaultValue={task.description}
           className="textarea textarea-bordered w-full"
           aria-invalid={!!state.errors?.description}
         ></textarea>
@@ -52,11 +57,21 @@ const Form = () => {
         )}
       </div>
 
+      <label className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          name="completed"
+          defaultChecked={task.completed}
+          className="checkbox"
+        />
+        Completed
+      </label>
+
       <button className="btn btn-primary" disabled={pending}>
-        {pending ? "Creating..." : "Create Task"}
+        {pending ? "Updating..." : "Update Task"}
       </button>
     </form>
   );
 };
 
-export default Form;
+export default EditForm;

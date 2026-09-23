@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-const taskValidator = z.object({
+export const taskValidator = z.object({
   title: z
     .string("Enter a title")
     .min(3, "Title must be at least 3 characters long")
@@ -9,6 +9,7 @@ const taskValidator = z.object({
     .string("Enter a description")
     .min(10, "Description must be at least 10 characters long")
     .max(200, "Description must be at most 200 characters long"),
+  completed: z.boolean().optional(),
 });
 
-export default taskValidator;
+export type TaskInput = z.infer<typeof taskValidator>;

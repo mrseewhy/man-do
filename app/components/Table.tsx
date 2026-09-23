@@ -1,17 +1,17 @@
-import Link from "next/link";
+"use client";
 
-type Task = {
-  publicId: string;
-  title: string;
-  description: string;
-  completed: boolean;
-};
+import Link from "next/link";
+import { useTransition } from "react";
+import { toggleTaskAction } from "@/lib/actions/task.actions";
+import type { Task } from "@/lib/data/dal/tasks";
 
 type TableProps = {
   tasks: Task[];
 };
 
 const Table = ({ tasks }: TableProps) => {
+  const [isPending, startTransition] = useTransition();
+
   return (
     <div className="w-full">
       <div className="w-full overflow-x-auto">
@@ -27,12 +27,18 @@ const Table = ({ tasks }: TableProps) => {
 
           <tbody>
             {tasks.map((task) => (
-              <tr key={task.publicId} className="hover">
+              <tr key={task.publicId} className={`hover${isPending ? " animate-pulse" : ""}`}>
                 <th className="w-12 text-center">
                   <input
                     type="checkbox"
                     className="checkbox"
                     defaultChecked={task.completed}
+                    aria-label={`Mark ${task.title} as ${task.completed ? "incomplete" : "complete"}`}
+                    onChange={() =>
+                      startTransition(async () => {
+                        await toggleTaskAction(task.publicId, !task.completed);
+                      })
+                    }
                   />
                 </th>
 
@@ -45,13 +51,23 @@ const Table = ({ tasks }: TableProps) => {
                 <td className="w-1/4">
                   <div className="flex gap-2">
                     <Link
-                      href={`task/${task.publicId}`}
+                      href={`/task/${task.publicId}`}
                       className="btn btn-outline btn-sm"
                     >
                       View
                     </Link>
-                    <button className="btn btn-primary btn-sm">Edit</button>
-                    <button className="btn btn-error btn-sm">Delete</button>
+                    <Link
+                      href={`/task/${task.publicId}/edit`}
+                      className="btn btn-primary btn-sm"
+                    >
+                      Edit
+                    </Link>
+                    <Link
+                      href={`/task/${task.publicId}/delete`}
+                      className="btn btn-error btn-sm"
+                    >
+                      Delete
+                    </Link>
                   </div>
                 </td>
               </tr>

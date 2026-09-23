@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getOneTask } from "../../../../lib/data/dal/tasks";
+import { getOneTask } from "@/lib/data/dal/tasks";
 import { notFound } from "next/navigation";
 
 type Props = {
